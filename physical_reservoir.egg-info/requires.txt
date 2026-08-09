@@ -1,0 +1,9 @@
+jax
+jaxlib
+equinox
+diffrax
+jaxtyping
+optax
+scikit-learn
+matplotlib
+pytest

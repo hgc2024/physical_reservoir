@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "physical-reservoir"
+version = "0.1.0"
+description = "Skeleton project for differentiable physical reservoir computing"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "jax",
+  "jaxlib",
+  "equinox",
+  "diffrax",
+  "jaxtyping",
+  "optax",
+  "scikit-learn",
+  "matplotlib",
+  "pytest"
+]
+
+[tool.setuptools.packages.find]
+include = ["physres*"]
