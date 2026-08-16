@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "physical-reservoir"
 version = "0.1.0"
-description = "Skeleton project for differentiable physical reservoir computing"
+description = "Differentiable physical reservoir computing experiments"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

@@ -1,1 +1,1 @@
-"""Physical reservoir computing package skeleton."""
+"""Tools for reproducible physical reservoir computing experiments."""
