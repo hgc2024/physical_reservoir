@@ -30,6 +30,8 @@ Lower MSE, RMSE, and NRMSE are better. NRMSE measures error relative to the natu
 | Lagged linear baseline | 0.019220 | 0.1386 | 0.686 | 0.530 |
 | Persistence baseline | 0.103443 | 0.3216 | 1.590 | -1.529 |
 
+The forecast panel plots the observed trajectory and all three methods on the same held-out timestamps, making differences in timing, amplitude, and turning points directly comparable.
+
 The reservoir RMSE is `80.0%` lower than persistence at this forecast horizon. This is a comparative benchmark result, not yet a general claim about other trajectories, seeds, substrates, or forecasting horizons.
 
 ## Fading-memory evaluation

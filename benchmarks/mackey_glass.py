@@ -122,6 +122,8 @@ Lower MSE, RMSE, and NRMSE are better. NRMSE measures error relative to the natu
 {_metrics_row("Lagged linear baseline", lagged_metrics)}
 {_metrics_row("Persistence baseline", persistence_metrics)}
 
+The forecast panel plots the observed trajectory and all three methods on the same held-out timestamps, making differences in timing, amplitude, and turning points directly comparable.
+
 The reservoir RMSE is `{improvement:.1f}%` lower than persistence at this forecast horizon. This is a comparative benchmark result, not yet a general claim about other trajectories, seeds, substrates, or forecasting horizons.
 
 ## Fading-memory evaluation
@@ -248,17 +250,47 @@ def main() -> None:
     print(report)
 
     time = jnp.arange(original_targets.size) * 0.1
-    figure, axes = plt.subplots(3, 1, figsize=(11, 9), constrained_layout=True)
-    axes[0].plot(time, original_targets, label="Observed", linewidth=1.5)
+    figure, axes = plt.subplots(3, 1, figsize=(11, 10), constrained_layout=True)
     axes[0].plot(
-        time, original_reservoir_prediction, label="Reservoir forecast", linewidth=1.2
+        time,
+        original_targets,
+        color="black",
+        label="Observed",
+        linewidth=2.0,
+        zorder=4,
+    )
+    axes[0].plot(
+        time,
+        original_reservoir_prediction,
+        color="tab:blue",
+        label="Memristive reservoir",
+        linewidth=1.5,
+        zorder=3,
+    )
+    axes[0].plot(
+        time,
+        original_lagged_prediction,
+        color="tab:orange",
+        label="Lagged linear",
+        linewidth=1.4,
+        linestyle="--",
+        zorder=2,
+    )
+    axes[0].plot(
+        time,
+        original_persistence,
+        color="tab:gray",
+        label="Persistence",
+        linewidth=1.4,
+        linestyle=":",
+        zorder=1,
     )
     axes[0].set(
-        title=f"Held-out forecast ({args.horizon * 0.1:g} time units ahead)",
+        title=f"Held-out method comparison ({args.horizon * 0.1:g} time units ahead)",
         xlabel="Test time (model time units)",
         ylabel="Mackey-Glass value",
     )
-    axes[0].legend()
+    axes[0].legend(ncol=2)
     state_image = axes[1].imshow(
         test_states.T,
         aspect="auto",
