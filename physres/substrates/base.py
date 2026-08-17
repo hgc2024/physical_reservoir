@@ -27,3 +27,11 @@ class AbstractSubstrate(Module, ABC):
     @abstractmethod
     def output_map(self, x: Any) -> Any:
         """Map the internal state to an output vector."""
+
+    @abstractmethod
+    def initial_state(self) -> Any:
+        """Return the substrate state used at the start of an experiment."""
+
+    def constrain_state(self, x: Any) -> Any:
+        """Project a numerical integration result onto valid physical states."""
+        return x
