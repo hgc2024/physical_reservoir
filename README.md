@@ -107,6 +107,34 @@ benchmarks/
 └── mackey_glass.py
 ```
 
+## Suggested reading order
+
+A new reader will get the clearest picture by making two passes through the repository: first understand how an experiment is assembled, then follow the data through each implementation layer.
+
+1. **Start with this README.** Read through "Dataset and methodology," "Signal processing," "Reservoir computing model," and "Evaluation design." These sections explain the research question and the boundary between each stage before the code introduces JAX details.
+2. **Skim [`benchmarks/mackey_glass.py`](benchmarks/mackey_glass.py).** Treat its `main` function as the map of the complete experiment. It shows generation, splitting, standardization, state creation, target alignment, readout selection, baseline comparison, and reporting in one place. Do not worry about the implementations on this first pass.
+3. **Read [`physres/datasets/mackey_glass.py`](physres/datasets/mackey_glass.py).** This is the source of the raw sequence. Focus on `MackeyGlassConfig`, the delayed value held in the history buffer, and the Euler update that produces each sample. The broader dataset notes in [`mackey_glass_data.md`](mackey_glass_data.md) are useful background but are not required to follow the code.
+4. **Read [`physres/preprocessing/time_series.py`](physres/preprocessing/time_series.py).** This establishes the experiment's leakage controls: chronological train/validation/test splits and standardization fitted only on training data. `TimeSeriesSplits` and `StandardizationStats` are the main data containers.
+5. **Follow the EDA branch.** [`physres/eda/time_series.py`](physres/eda/time_series.py) contains descriptive statistics, autocorrelation, and plotting primitives. [`benchmarks/mackey_glass_eda.py`](benchmarks/mackey_glass_eda.py) shows how they become the readable report and figure. This branch validates the signal but does not train the reservoir.
+6. **Read [`physres/signal_processing/forecasting.py`](physres/signal_processing/forecasting.py).** This file turns an ordered signal into a prediction task. Compare `make_forecast_pairs`, used by persistence, with `build_lagged_forecast`, used by the linear baseline, and `align_states_and_targets`, used by the reservoir.
+7. **Read the physical model from interface to implementation.** Start with [`physres/substrates/base.py`](physres/substrates/base.py) for the substrate contract, then read [`physres/substrates/memristor.py`](physres/substrates/memristor.py) for filament dynamics, recurrent coupling, state constraints, and the conductance output map.
+8. **Read the execution engine.** [`physres/engine/solver.py`](physres/engine/solver.py) advances a substrate through the input sequence with Euler or RK4. [`physres/engine/reservoir.py`](physres/engine/reservoir.py) wraps the substrate and solver behind the higher-level `PhysicalReservoir.transform` interface used by experiments.
+9. **Read training and evaluation.** [`physres/readouts/ridge.py`](physres/readouts/ridge.py) is the only trained model component. Then read [`physres/metrics/forecasting.py`](physres/metrics/forecasting.py) for held-out forecast scores and [`physres/metrics/memory_capacity.py`](physres/metrics/memory_capacity.py) for the separate fading-memory diagnostic.
+10. **Return to [`benchmarks/mackey_glass.py`](benchmarks/mackey_glass.py).** The complete flow should now be legible, including validation-based ridge selection, common test timestamps for all three methods, the independent memory experiment, and report generation. Finish with the corresponding files under [`tests/`](tests/) to see the assumptions each layer guarantees.
+
+The core flow can be kept in mind as:
+
+```text
+generate signal
+    -> inspect with EDA
+    -> split and standardize
+    -> construct causal targets
+    -> evolve memristive reservoir states
+    -> fit ridge readout
+    -> compare reservoir, lagged linear, and persistence
+    -> report forecast metrics and memory capacity
+```
+
 ## Planned research directions
 
 - Volatile memristor nanonetwork dynamics
